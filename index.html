@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aetherium: Netzwerk-Rätsel Deluxe (Untimed, Fixed)</title>
+    <title>Aetherium: Netzwerk-Rätsel Deluxe</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
     <style>
         :root {
             --primary-color: #00ffaa;
@@ -15,15 +14,12 @@
             --hover-color: #00ffaa;
             --text-color: #ffffff;
             --bg-color: #000000;
-            --power-node-color: #ffaa00; /* Orange */
-            --speed-node-color: #00ff00; /* Green (Now Points) */
-            --bonus-node-color: #aa00ff; /* Purple */
-            --target-color: #ff0000; /* Red */
-            --target-emissive: #ff0000;
+            --power-node-color: #ffaa00;
+            --speed-node-color: #00ff00;
+            --bonus-node-color: #aa00ff;
         }
-
+        
         .dark {
-            /* Dark mode variables (can be same as root for this theme) */
             --primary-color: #00ffaa;
             --node-color: #00ffff;
             --selected-color: #ff00ff;
@@ -31,79 +27,58 @@
             --text-color: #ffffff;
             --bg-color: #000000;
             --power-node-color: #ffaa00;
-            --speed-node-color: #00ff00; /* Green (Now Points) */
+            --speed-node-color: #00ff00;
             --bonus-node-color: #aa00ff;
-            --target-color: #ff3030; /* Slightly less intense red for base */
-            --target-emissive: #ff0000;
         }
-
+        
         body {
             margin: 0;
             overflow: hidden;
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: 'Inter', sans-serif;
-            touch-action: none; /* Prevent default touch actions like scrolling */
+            touch-action: none;
         }
-
+        
         canvas {
             display: block;
-            touch-action: none; /* Prevent default touch actions on canvas */
+            touch-action: none;
         }
-
+        
         #ui-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            padding: 15px 20px; /* Adjusted padding */
+            padding: 20px;
             background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
             z-index: 10;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start; /* Align items to the top */
-            pointer-events: none; /* Allow clicks to pass through */
         }
-
-        #score-section, #timer-section {
-            pointer-events: auto; /* Allow interaction with potential future elements here */
-        }
-
-        #score-section {
-            flex: 1;
-        }
-
-        /* Hide Timer Section */
-        #timer-section {
-            display: none; /* Removed timer */
-        }
-
+        
         #score-display {
             font-size: 24px;
             color: var(--primary-color);
             text-shadow: 0 0 10px rgba(0,255,170,0.5);
         }
-
+        
         #level-display {
             font-size: 18px;
             color: var(--text-color);
             margin-top: 5px;
         }
-
+        
         #combo-display {
             font-size: 16px;
-            color: #ff9900; /* Orange for combo */
+            color: #ff9900;
             margin-top: 5px;
             opacity: 0;
-            transition: opacity 0.3s ease, transform 0.2s ease;
-            transform: translateY(10px); /* Start slightly lower */
+            transition: opacity 0.3s ease;
         }
-
+        
         #combo-display.active {
             opacity: 1;
-            transform: translateY(0);
         }
-
+        
         #objective {
             position: fixed;
             bottom: 20px;
@@ -118,132 +93,126 @@
             text-align: center;
             max-width: 90%;
             z-index: 10;
-            pointer-events: none;
         }
-
-        .tutorial, .level-complete, .game-over {
+        
+        .tutorial {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background: rgba(0,0,0,0.9);
-            padding: 25px; /* Increased padding */
+            padding: 20px;
             border-radius: 15px;
             border: 2px solid var(--primary-color);
             max-width: 90%;
             width: 450px;
             text-align: center;
             z-index: 100;
-            pointer-events: auto; /* Enable interaction */
-            box-shadow: 0 0 20px rgba(0, 255, 170, 0.3);
         }
-
-        .game-over {
-             border-color: #ff5555; /* Red border for game over */
-             box-shadow: 0 0 20px rgba(255, 85, 85, 0.4);
-        }
-
+        
         .button {
             background: var(--primary-color);
             border: none;
-            padding: 12px 25px; /* Slightly larger buttons */
-            border-radius: 8px; /* More rounded */
+            padding: 10px 20px;
+            border-radius: 5px;
             color: #000;
             font-weight: bold;
-            margin-top: 20px; /* Increased margin */
+            margin-top: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 16px;
-            pointer-events: auto; /* Ensure buttons are clickable */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
-
+        
         .button:hover {
             background: #fff;
-            transform: scale(1.05) translateY(-2px); /* Add subtle lift */
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+            transform: scale(1.05);
         }
-
-        .level-complete, .game-over {
-            animation: fadeInScale 0.5s ease-out;
+        
+        .level-complete {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid var(--primary-color);
+            max-width: 90%;
+            width: 450px;
+            text-align: center;
+            z-index: 100;
+            animation: fadeIn 0.5s ease-in;
         }
-
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-            to { opacity: 1; transform: translate(-50%, -50%) scale(1.0); }
-        }
-
+        
         #power-up-notification {
             position: fixed;
-            top: 80px; /* Position below the main UI */
+            top: 80px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
-            padding: 10px 20px; /* Increased padding */
+            background: rgba(0,0,0,0.7);
+            padding: 8px 15px;
             border-radius: 10px;
-            border: 2px solid var(--power-node-color); /* Default to power-up color */
+            border: 1px solid var(--power-node-color);
             font-size: 16px;
-            font-weight: bold;
             color: var(--text-color);
             text-align: center;
             max-width: 90%;
             z-index: 10;
             opacity: 0;
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            transform: translateX(-50%) translateY(-20px); /* Start slightly higher */
-            pointer-events: none;
+            transition: opacity 0.5s ease;
         }
-
+        
         #power-up-notification.visible {
             opacity: 1;
-            transform: translateX(-50%) translateY(0);
         }
-
+        
         .bonus-points {
             position: absolute;
             font-size: 18px;
             font-weight: bold;
-            color: #ffff00; /* Yellow for bonus points */
+            color: #ffff00;
             pointer-events: none;
             z-index: 1000;
-            animation: flyUpFade 1.5s ease-out forwards;
+            animation: flyUp 1.5s forwards;
             text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
         }
-
-        @keyframes flyUpFade {
+        
+        @keyframes flyUp {
             0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-60px); opacity: 0; } /* Fly higher */
+            100% { transform: translateY(-50px); opacity: 0; }
         }
-
+        
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-
+        
         @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(1.05); }
-            100% { opacity: 1; transform: scale(1); }
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
         }
-
+        
         @keyframes spin {
-            0% { transform: rotateY(0deg); }
-            100% { transform: rotateY(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-
+        
         @media (max-width: 640px) {
-            #ui-overlay { padding: 10px 15px; }
-            #score-display { font-size: 20px; }
-            #level-display { font-size: 16px; }
-            #objective { font-size: 14px; padding: 8px 16px; bottom: 15px; }
-            .tutorial, .level-complete, .game-over { width: 90%; padding: 20px; }
-            .button { padding: 10px 20px; font-size: 15px; }
-            #node-legend { bottom: 65px; font-size: 12px; gap: 10px; padding: 6px 12px; }
-            .legend-color { width: 10px; height: 10px; }
-            #settings-button { top: 15px; right: 15px; width: 35px; height: 35px; }
-            #settings-panel { top: 60px; right: 15px; width: 220px; }
+            #score-display {
+                font-size: 20px;
+            }
+            
+            #level-display {
+                font-size: 16px;
+            }
+            
+            #objective {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
         }
-
+        
         .loading {
             position: fixed;
             top: 0;
@@ -255,9 +224,8 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            transition: opacity 0.5s ease-out; /* Fade out transition */
         }
-
+        
         .loading-text {
             color: var(--primary-color);
             font-size: 24px;
@@ -265,7 +233,7 @@
             letter-spacing: 3px;
             animation: pulse 1.5s infinite;
         }
-
+        
         /* Node type indicator and legend */
         #node-legend {
             position: fixed;
@@ -284,22 +252,20 @@
             justify-content: center;
             max-width: 90%;
             z-index: 9;
-            pointer-events: none;
         }
-
+        
         .legend-item {
             display: flex;
             align-items: center;
             gap: 5px;
         }
-
+        
         .legend-color {
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.5); /* Add slight border */
         }
-
+        
         /* Settings Panel */
         #settings-button {
             position: fixed;
@@ -316,90 +282,42 @@
             cursor: pointer;
             z-index: 20;
             transition: all 0.3s ease;
-            pointer-events: auto; /* Make button clickable */
         }
-
+        
         #settings-button:hover {
             background-color: rgba(0,255,170,0.2);
-            transform: scale(1.1);
         }
-
+        
         #settings-panel {
             position: fixed;
             top: 70px;
             right: 20px;
-            background: rgba(10, 10, 10, 0.9); /* Slightly lighter background */
-            padding: 20px; /* Increased padding */
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
             border-radius: 10px;
             border: 1px solid var(--primary-color);
             z-index: 20;
-            width: 280px; /* Wider panel */
+            width: 250px;
             display: none;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            pointer-events: auto; /* Allow interaction */
         }
-
+        
         #settings-panel.visible {
             display: block;
             animation: fadeIn 0.3s ease-in;
         }
-
+        
         .setting-item {
-            margin-bottom: 18px; /* Increased spacing */
+            margin-bottom: 15px;
         }
-         .setting-item:last-child {
-             margin-bottom: 0;
-         }
-
+        
         .setting-label {
             font-size: 14px;
-            margin-bottom: 8px; /* Increased spacing */
+            margin-bottom: 5px;
             display: block;
-            color: var(--primary-color); /* Label color */
         }
-
+        
         .setting-control {
             width: 100%;
-        }
-        /* Style range inputs */
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 8px;
-            background: #333;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            cursor: pointer;
-        }
-        input[type="range"]::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            cursor: pointer;
-            border: none;
-        }
-        /* Style select inputs */
-        select.setting-control {
-            background-color: #222; /* Darker background */
-            color: var(--text-color);
-            padding: 8px 12px; /* Adjusted padding */
-            border: 1px solid #444;
-            border-radius: 5px;
-            appearance: none; /* Remove default arrow */
-            background-image: url('data:image/svg+xml;utf8,<svg fill="%2300ffaa" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); /* Custom arrow */
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 20px;
         }
     </style>
 </head>
@@ -407,22 +325,18 @@
     <div class="loading">
         <div class="loading-text">Lädt Aetherium Deluxe...</div>
     </div>
-
+    
     <div id="ui-overlay">
-        <div id="score-section">
-            <div id="score-display">Score: 0</div>
-            <div id="level-display">Level 1</div>
-            <div id="combo-display">Combo: x1</div>
-        </div>
-        <div id="timer-section">
-            </div>
+        <div id="score-display">Score: 0</div>
+        <div id="level-display">Level 1</div>
+        <div id="combo-display">Combo: x1</div>
     </div>
-
+    
     <div id="objective">Verbinde die rot blinkenden Knoten, um das Level abzuschließen!</div>
-
+    
     <div id="node-legend">
         <div class="legend-item">
-            <div class="legend-color" style="background-color: var(--target-emissive);"></div>
+            <div class="legend-color" style="background-color: #ff0000;"></div>
             <span>Ziel</span>
         </div>
         <div class="legend-item">
@@ -431,27 +345,27 @@
         </div>
         <div class="legend-item">
             <div class="legend-color" style="background-color: var(--speed-node-color);"></div>
-            <span>Punkte</span> </div>
+            <span>Extra-Punkte</span>
+        </div>
         <div class="legend-item">
             <div class="legend-color" style="background-color: var(--bonus-node-color);"></div>
             <span>Bonus</span>
         </div>
     </div>
-
+    
     <div id="power-up-notification">Power-Up aktiviert: Doppelte Punkte für 10s!</div>
-
-    <div id="settings-button" title="Einstellungen">
+    
+    <div id="settings-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
     </div>
-
+    
     <div id="settings-panel">
-         <h3 class="setting-label" style="font-size: 18px; text-align: center; margin-bottom: 20px;">Einstellungen</h3>
         <div class="setting-item">
             <label class="setting-label" for="difficulty-setting">Schwierigkeitsgrad:</label>
-            <select id="difficulty-setting" class="setting-control">
+            <select id="difficulty-setting" class="setting-control bg-gray-800 text-white p-2 rounded">
                 <option value="easy">Leicht</option>
                 <option value="normal" selected>Normal</option>
                 <option value="hard">Schwer</option>
@@ -459,19 +373,11 @@
         </div>
         <div class="setting-item">
             <label class="setting-label" for="particles-setting">Partikeleffekte:</label>
-            <select id="particles-setting" class="setting-control">
+            <select id="particles-setting" class="setting-control bg-gray-800 text-white p-2 rounded">
                 <option value="high" selected>Hoch</option>
                 <option value="medium">Mittel</option>
                 <option value="low">Niedrig</option>
             </select>
-        </div>
-        <div class="setting-item">
-            <label class="setting-label" for="music-volume">Musik Lautstärke:</label>
-            <input type="range" id="music-volume" class="setting-control" min="0" max="100" value="30">
-        </div>
-        <div class="setting-item">
-            <label class="setting-label" for="sfx-volume">Sound-Effekte Lautstärke:</label>
-            <input type="range" id="sfx-volume" class="setting-control" min="0" max="100" value="70">
         </div>
     </div>
 
@@ -495,97 +401,24 @@
         import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
         import { Line2 } from 'three/addons/lines/Line2.js';
 
-        // --- Audio Setup (Tone.js) ---
-        let audioInitialized = false;
-        let musicPlayer = null;
-        const sfxVolume = new Tone.Volume(-6).toDestination(); // Initial SFX Volume (approx 70%)
-
-        const synths = {
-            click: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0.01, release: 0.1 } }).connect(sfxVolume),
-            connect: new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.3 } }).connect(sfxVolume),
-            hover: new Tone.Synth({ volume: -25, oscillator: { type: 'square' }, envelope: { attack: 0.005, decay: 0.05, sustain: 0, release: 0.05 } }).connect(sfxVolume),
-            levelComplete: new Tone.MonoSynth({
-                volume: -8, oscillator: { type: "sawtooth" },
-                envelope: { attack: 0.05, decay: 0.3, sustain: 0.2, release: 0.8 },
-                filterEnvelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.1, baseFrequency: 300, octaves: 4 }
-            }).connect(sfxVolume),
-            powerUpPower: new Tone.Synth({ volume: -5, oscillator: { type: 'pulse', width: 0.6 }, envelope: { attack: 0.01, decay: 0.3, sustain: 0.2, release: 0.4 } }).connect(sfxVolume),
-            powerUpSpeed: new Tone.Synth({ volume: -8, oscillator: { type: 'fmsine', modulationIndex: 10, harmonicity: 3 }, envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.2 } }).connect(sfxVolume), // Sound for the Points node (formerly Speed)
-            powerUpBonus: new Tone.Synth({ volume: -10, oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.15, sustain: 0.05, release: 0.2 } }).connect(sfxVolume),
-            combo: new Tone.Synth({ volume: -15, oscillator: { type: 'square' }, envelope: { attack: 0.005, decay: 0.08, sustain: 0, release: 0.1 } }).connect(sfxVolume)
-        };
-
-        // Function to initialize audio context and start music
-        async function initializeAudio() {
-            if (audioInitialized) return;
-            try {
-                await Tone.start();
-                console.log('Audio Context started');
-                audioInitialized = true;
-
-                // Create and start background music loop
-                musicPlayer = new Tone.Synth({
-                    volume: -25, // Initial Music Volume (approx 30%)
-                    oscillator: { type: "amsine", harmonicity: 1.2, modulationType: "sine" },
-                    envelope: { attack: 2, decay: 1, sustain: 0.8, release: 4 },
-                    modulation: { type: "triangle" },
-                    modulationEnvelope: { attack: 1, decay: 0.5, sustain: 1, release: 2 }
-                }).toDestination();
-
-                // Simple looping melody
-                const melody = [
-                    { time: "0:0", note: "C3", duration: "2n" },
-                    { time: "0:2", note: "E3", duration: "2n" },
-                    { time: "1:0", note: "G3", duration: "2n" },
-                    { time: "1:2", note: "B3", duration: "2n" },
-                    { time: "2:0", note: "C4", duration: "1n" },
-                    { time: "3:0", note: "G3", duration: "1n" },
-                ];
-
-                const musicPart = new Tone.Part((time, value) => {
-                     musicPlayer.triggerAttackRelease(value.note, value.duration, time);
-                }, melody).start(0);
-                musicPart.loop = true;
-                musicPart.loopEnd = "4m"; // Loop every 4 measures
-
-                Tone.Transport.start();
-                console.log('Music started');
-
-                // Set initial volumes from sliders
-                updateMusicVolume(document.getElementById('music-volume').value);
-                updateSfxVolume(document.getElementById('sfx-volume').value);
-
-            } catch (e) {
-                console.error("Error starting Audio Context:", e);
+        // Dark mode detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
             }
-        }
-
-        // Function to convert slider value (0-100) to dB
-        function sliderToDb(value) {
-            if (value <= 0) return -Infinity;
-             return Tone.gainToDb(value / 100);
-        }
-
-        // Update music volume
-        function updateMusicVolume(value) {
-            if (musicPlayer) {
-                const dbValue = sliderToDb(value);
-                musicPlayer.volume.rampTo(dbValue, 0.1);
-            }
-        }
-
-        // Update SFX volume
-        function updateSfxVolume(value) {
-            const dbValue = sliderToDb(value);
-            sfxVolume.volume.rampTo(dbValue, 0.1);
-        }
-
+        });
 
         // --- Global Variables ---
         let scene, camera, renderer, controls, composer;
         let raycaster, mouse, pointerOverCanvas = false;
         const interactableNodes = [];
         const permanentLines = [];
+        const tempLines = [];
         const nodeDataMap = new Map();
         let selectedNode = null;
         let hoveredNode = null;
@@ -594,15 +427,21 @@
         const clock = new THREE.Clock();
         let particles, particleSystem;
         let isInitialized = false;
-        let powerUpTimeout = null;
-        let comboTimeout = null;
-        let lastHoverSoundTime = 0; // Throttle hover sound
-
-        // Difficulty settings (Time elements removed/ignored)
+        let powerUpTimeout;
+        let comboTimeout;
         let difficultySettings = {
-            easy: { scoreMultiplier: 0.8, specialNodeChance: 0.2, pointsFromSpeedNode: 25 },
-            normal: { scoreMultiplier: 1.0, specialNodeChance: 0.3, pointsFromSpeedNode: 50 },
-            hard: { scoreMultiplier: 1.5, specialNodeChance: 0.4, pointsFromSpeedNode: 75 }
+            easy: {
+                scoreMultiplier: 0.8,
+                specialNodeChance: 0.2
+            },
+            normal: {
+                scoreMultiplier: 1.0,
+                specialNodeChance: 0.3
+            },
+            hard: {
+                scoreMultiplier: 1.5,
+                specialNodeChance: 0.4
+            }
         };
 
         // --- Game State ---
@@ -612,107 +451,105 @@
             targetConnections: [],
             completedConnections: new Set(),
             isLevelComplete: false,
-            isGameOver: false, // Can still be used for other fail conditions if added later
             tutorial: true,
             levelStartTime: 0,
             difficulty: 'normal',
             combo: 0,
             comboMultiplier: 1,
-            powerUps: { doublePoints: false }, // Removed slowTime
-            specialNodes: { power: [], speed: [], bonus: [] } // speed node now gives points
+            powerUps: {
+                doublePoints: false,
+                magneticNodes: false
+            },
+            specialNodes: {
+                power: [], // Double points
+                speed: [], // Extra points
+                bonus: []  // Bonus points
+            }
         };
 
         // --- Settings Panel ---
         function setupSettingsPanel() {
             const settingsButton = document.getElementById('settings-button');
             const settingsPanel = document.getElementById('settings-panel');
-            const difficultySetting = document.getElementById('difficulty-setting');
-            const particlesSetting = document.getElementById('particles-setting');
-            const musicVolumeSlider = document.getElementById('music-volume');
-            const sfxVolumeSlider = document.getElementById('sfx-volume');
-
-            settingsButton.addEventListener('click', (e) => {
-                e.stopPropagation();
+            
+            settingsButton.addEventListener('click', () => {
                 settingsPanel.classList.toggle('visible');
             });
-
+            
+            // Difficulty setting
+            const difficultySetting = document.getElementById('difficulty-setting');
             difficultySetting.value = gameState.difficulty;
             difficultySetting.addEventListener('change', () => {
                 gameState.difficulty = difficultySetting.value;
-                console.log("Difficulty changed to:", gameState.difficulty);
             });
-
+            
+            // Particles setting
+            const particlesSetting = document.getElementById('particles-setting');
             particlesSetting.addEventListener('change', () => {
-                 createBackgroundParticles();
+                const value = particlesSetting.value;
+                if (particles && particleSystem) {
+                    if (value === 'low') {
+                        particles.visible = false;
+                        particleSystem.visible = false;
+                    } else if (value === 'medium') {
+                        particles.visible = true;
+                        particleSystem.visible = false;
+                    } else {
+                        particles.visible = true;
+                        particleSystem.visible = true;
+                    }
+                }
             });
-
-            musicVolumeSlider.addEventListener('input', () => updateMusicVolume(musicVolumeSlider.value));
-            sfxVolumeSlider.addEventListener('input', () => updateSfxVolume(sfxVolumeSlider.value));
-
+            
+            // Close panel when clicking outside
             document.addEventListener('click', (event) => {
-                if (settingsPanel.classList.contains('visible') &&
-                    !settingsPanel.contains(event.target) &&
+                if (settingsPanel.classList.contains('visible') && 
+                    !settingsPanel.contains(event.target) && 
                     !settingsButton.contains(event.target)) {
                     settingsPanel.classList.remove('visible');
                 }
             });
         }
 
-        // --- UI Functions ---
         function showTutorial() {
-             document.querySelectorAll('.tutorial, .level-complete, .game-over').forEach(el => el.remove());
-             gameState.tutorial = true;
-             gameState.isGameOver = false;
-             gameState.isLevelComplete = false;
-
             const tutorial = document.createElement('div');
             tutorial.className = 'tutorial';
             tutorial.innerHTML = `
                 <h2 style="font-size: 24px; color: var(--primary-color); margin-bottom: 15px;">Willkommen bei Aetherium Deluxe!</h2>
-                <p style="margin-bottom: 10px;">Verbinde die rot blinkenden Knoten miteinander.</p>
-                <p style="margin-bottom: 10px;">Spezielle Knoten geben dir Power-Ups oder Punkte:</p>
+                <p style="margin-bottom: 10px;">Verbinde die rot blinkenden Knoten miteinander, um Energie durch das Netzwerk fließen zu lassen.</p>
+                <p style="margin-bottom: 10px;">Jede erfolgreiche Verbindung gibt dir Punkte - keine Zeitbegrenzung!</p>
+                <p style="margin-bottom: 10px;">Spezielle Knoten geben dir Power-Ups:</p>
                 <div style="display: flex; justify-content: center; margin: 15px 0; gap: 15px;">
                     <div style="text-align: center;">
-                        <div class="legend-color" style="background-color: var(--power-node-color); margin: 0 auto 5px;"></div><p>Power</p>
+                        <div style="width: 20px; height: 20px; background-color: var(--power-node-color); border-radius: 50%; margin: 0 auto;"></div>
+                        <p>Doppelte Punkte</p>
                     </div>
                     <div style="text-align: center;">
-                        <div class="legend-color" style="background-color: var(--speed-node-color); margin: 0 auto 5px;"></div><p>Punkte</p> </div>
+                        <div style="width: 20px; height: 20px; background-color: var(--speed-node-color); border-radius: 50%; margin: 0 auto;"></div>
+                        <p>Extra Punkte</p>
+                    </div>
                     <div style="text-align: center;">
-                        <div class="legend-color" style="background-color: var(--bonus-node-color); margin: 0 auto 5px;"></div><p>Bonus</p>
+                        <div style="width: 20px; height: 20px; background-color: var(--bonus-node-color); border-radius: 50%; margin: 0 auto;"></div>
+                        <p>Bonus Punkte</p>
                     </div>
                 </div>
-                <p style="margin-bottom: 15px;">Baue Combos für mehr Punkte!</p> <button class="button" id="start-game">Spiel starten</button>
+                <p style="margin-bottom: 15px;">Baue Combos auf, indem du schnell mehrere Verbindungen erstellst!</p>
+                <button class="button" id="start-game">Spiel starten</button>
             `;
             document.body.appendChild(tutorial);
 
-            document.getElementById('start-game').onclick = async () => {
-                await initializeAudio(); // Initialize audio on first interaction
+            document.getElementById('start-game').onclick = () => {
                 tutorial.remove();
                 gameState.tutorial = false;
-                resetGame(); // Start fresh game after tutorial
+                gameState.levelStartTime = Date.now();
             };
         }
 
-        // Timer function simplified - no countdown needed
-        function startTimer() {
-            // No timer logic needed here anymore
-        }
-
         function showLevelComplete() {
-            if (gameState.isLevelComplete) return;
-            gameState.isLevelComplete = true;
-
-            // Play level complete sound
-            if (audioInitialized) {
-                 synths.levelComplete.triggerAttackRelease("C4", "0.5", "+0.1");
-                 synths.levelComplete.triggerAttackRelease("G4", "0.5", "+0.3");
-                 synths.levelComplete.triggerAttackRelease("C5", "0.8", "+0.6");
-            }
-
             const difficultyMultiplier = difficultySettings[gameState.difficulty].scoreMultiplier;
             const levelScore = Math.floor(gameState.level * 100 * difficultyMultiplier);
-            const totalScore = levelScore; // No time bonus added
-
+            const totalScore = levelScore;
+            
             gameState.score += totalScore;
             updateUI();
 
@@ -732,72 +569,55 @@
             };
         }
 
-        function showGameOver() {
-             if (gameState.isGameOver) return;
-             gameState.isGameOver = true;
-
-            // Optional: Add a different game over sound if needed for other conditions
-
-            const gameOver = document.createElement('div');
-            gameOver.className = 'game-over';
-            gameOver.innerHTML = `
-                <h2 style="font-size: 24px; color: #ff5555; margin-bottom: 15px;">Spiel Vorbei</h2> <p style="margin-bottom: 10px;">Du hast Level ${gameState.level} erreicht.</p>
-                <p style="margin-bottom: 15px; font-size: 22px;">Endpunktzahl: ${gameState.score}</p>
-                <button class="button" id="restart-game" style="background-color: #ff5555;">Neues Spiel</button>
-            `;
-            document.body.appendChild(gameOver);
-
-            document.getElementById('restart-game').onclick = () => {
-                gameOver.remove();
-                showTutorial(); // Go back to tutorial screen
-            };
-        }
-
         function resetGame() {
             gameState.score = 0;
             gameState.level = 1;
             gameState.combo = 0;
             gameState.comboMultiplier = 1;
-            gameState.isGameOver = false;
-            gameState.isLevelComplete = false;
-
+            
             clearPowerUps();
             initializeLevel(1);
         }
 
         function clearPowerUps() {
+            // Clear any active power-ups
             gameState.powerUps.doublePoints = false;
-            if (powerUpTimeout) clearTimeout(powerUpTimeout);
+            gameState.powerUps.magneticNodes = false;
+            
+            // Clear any power-up timeouts
+            if (powerUpTimeout) {
+                clearTimeout(powerUpTimeout);
+            }
+            
+            // Hide notification
             const notification = document.getElementById('power-up-notification');
-            if (notification) notification.classList.remove('visible');
+            notification.classList.remove('visible');
         }
 
         function initializeLevel(level) {
-            // Clear overlays and state
-            document.querySelectorAll('.level-complete, .game-over').forEach(el => el.remove());
-            clearPowerUps();
-
             gameState.level = level;
             gameState.targetConnections = [];
             gameState.completedConnections.clear();
             gameState.isLevelComplete = false;
-            gameState.isGameOver = false;
             gameState.levelStartTime = Date.now();
-            gameState.combo = 0; // Reset combo for new level
-            gameState.comboMultiplier = 1;
-            gameState.specialNodes = { power: [], speed: [], bonus: [] };
+            gameState.specialNodes = {
+                power: [],
+                speed: [],
+                bonus: []
+            };
 
-            // Reset nodes visual and logical state
+            // Reset all nodes to base state
             interactableNodes.forEach(node => {
                 node.userData.isTarget = false;
                 node.userData.specialType = null;
+                node.material.color.copy(node.userData.baseColor);
+                node.material.emissive.copy(node.userData.baseColor);
+                node.material.emissiveIntensity = node.userData.baseEmissiveIntensity;
                 node.scale.set(1, 1, 1);
-                node.rotation.set(0,0,0); // Reset rotation
-                // Apply base appearance (will be overridden for targets/specials below)
-                resetNodeAppearance(node);
+                node.rotation.set(0, 0, 0);
             });
 
-            // Remove old lines
+            // Remove all permanent connections
             permanentLines.forEach(line => {
                 scene.remove(line);
                 line.geometry.dispose();
@@ -805,193 +625,207 @@
             });
             permanentLines.length = 0;
 
-            // --- Generate New Level ---
+            // Create new target connections based on level
             const numConnections = Math.min(2 + Math.floor(level / 2), 7);
-            const numTargets = Math.min(numConnections * 2, Math.floor(interactableNodes.length * 0.6));
-            const availableNodes = [...interactableNodes]; // Copy nodes to select from
+            const numTargets = Math.min(numConnections * 2, interactableNodes.length * 0.6);
+            const availableNodes = [...interactableNodes];
             const selectedTargets = [];
-
-            // Select target nodes ensuring enough nodes are available
-            for (let i = 0; i < numTargets && availableNodes.length > 0; i++) {
+            
+            // Select target nodes
+            for (let i = 0; i < numTargets; i++) {
                 const randomIndex = Math.floor(Math.random() * availableNodes.length);
-                // Select node and remove it from available pool for special nodes
-                selectedTargets.push(availableNodes.splice(randomIndex, 1)[0]);
+                const selectedNode = availableNodes.splice(randomIndex, 1)[0];
+                selectedNode.userData.isTarget = true;
+                selectedTargets.push(selectedNode);
             }
-
-            // Mark selected nodes as targets AND apply initial visual state
-            selectedTargets.forEach(node => {
-                node.userData.isTarget = true;
-                // *** FIX: Apply initial target appearance ***
-                resetNodeAppearance(node);
-            });
-
-            // Create target connections (pairs of target nodes)
+            
+            // Create random non-overlapping connections
             const pairedNodes = new Set();
             for (let i = 0; i < numConnections && selectedTargets.length >= 2; i++) {
                 let nodeA, nodeB;
+                
+                // Keep trying to find a valid pair
                 let attempts = 0;
-                do { // Find two distinct, unpaired target nodes
+                do {
                     const idxA = Math.floor(Math.random() * selectedTargets.length);
                     nodeA = selectedTargets[idxA];
+                    
                     const idxB = Math.floor(Math.random() * selectedTargets.length);
                     nodeB = selectedTargets[idxB];
+                    
                     attempts++;
                     if (attempts > 100) break; // Prevent infinite loop
-                } while (nodeA === nodeB || pairedNodes.has(nodeA.uuid) || pairedNodes.has(nodeB.uuid));
-
-                if (attempts <= 100) { // If a valid pair was found
+                } while (
+                    nodeA === nodeB || 
+                    pairedNodes.has(nodeA.uuid) || 
+                    pairedNodes.has(nodeB.uuid)
+                );
+                
+                if (attempts <= 100) {
                     pairedNodes.add(nodeA.uuid);
                     pairedNodes.add(nodeB.uuid);
                     gameState.targetConnections.push([nodeA.uuid, nodeB.uuid]);
                 }
             }
-
-             // Add special nodes from the REMAINING available nodes
-             const specialNodeChance = difficultySettings[gameState.difficulty].specialNodeChance;
-             const specialTypes = ['power', 'speed', 'bonus']; // 'speed' now gives points
-             const numSpecialNodes = Math.floor(availableNodes.length * specialNodeChance);
-
-             for(let i = 0; i < numSpecialNodes && availableNodes.length > 0; i++) {
-                 const typeIndex = Math.floor(Math.random() * specialTypes.length);
-                 const type = specialTypes[typeIndex];
-
-                 const nodeIndex = Math.floor(Math.random() * availableNodes.length);
-                 const node = availableNodes.splice(nodeIndex, 1)[0]; // Select and remove
-
-                 node.userData.specialType = type;
-                 gameState.specialNodes[type].push(node.uuid);
-                 // *** FIX: Apply initial special node appearance ***
-                 resetNodeAppearance(node);
-             }
+            
+            // Add special nodes
+            const specialNodeChance = difficultySettings[gameState.difficulty].specialNodeChance;
+            const unpaired = availableNodes;
+            
+            // Power nodes (double points)
+            const powerNodeCount = Math.floor(Math.random() * 2) + 1; // 1-2 power nodes
+            for (let i = 0; i < powerNodeCount && unpaired.length > 0; i++) {
+                if (Math.random() < specialNodeChance) {
+                    const idx = Math.floor(Math.random() * unpaired.length);
+                    const node = unpaired.splice(idx, 1)[0];
+                    node.userData.specialType = 'power';
+                    gameState.specialNodes.power.push(node.uuid);
+                }
+            }
+            
+            // Speed nodes (extra points instead of time now)
+            const speedNodeCount = Math.floor(Math.random() * 2) + 1; // 1-2 speed nodes
+            for (let i = 0; i < speedNodeCount && unpaired.length > 0; i++) {
+                if (Math.random() < specialNodeChance) {
+                    const idx = Math.floor(Math.random() * unpaired.length);
+                    const node = unpaired.splice(idx, 1)[0];
+                    node.userData.specialType = 'speed';
+                    gameState.specialNodes.speed.push(node.uuid);
+                }
+            }
+            
+            // Bonus nodes (bonus points)
+            const bonusNodeCount = Math.min(level, 3); // More bonus nodes in higher levels
+            for (let i = 0; i < bonusNodeCount && unpaired.length > 0; i++) {
+                if (Math.random() < specialNodeChance * 1.5) { // Higher chance for bonus nodes
+                    const idx = Math.floor(Math.random() * unpaired.length);
+                    const node = unpaired.splice(idx, 1)[0];
+                    node.userData.specialType = 'bonus';
+                    gameState.specialNodes.bonus.push(node.uuid);
+                }
+            }
 
             updateUI();
-            startTimer(); // Call startTimer (doesn't do much now)
         }
 
-
         function checkLevelComplete() {
-            if (gameState.targetConnections.length === 0 || gameState.isLevelComplete) return;
-
             const allConnectionsMade = gameState.targetConnections.every(([nodeA, nodeB]) => {
-                return gameState.completedConnections.has(`${nodeA}-${nodeB}`) ||
+                return gameState.completedConnections.has(`${nodeA}-${nodeB}`) || 
                        gameState.completedConnections.has(`${nodeB}-${nodeA}`);
             });
 
-            if (allConnectionsMade) {
+            if (allConnectionsMade && !gameState.isLevelComplete) {
+                gameState.isLevelComplete = true;
                 showLevelComplete();
             }
+
             updateUI();
         }
-
+        
         function updateCombo() {
+            // Increase combo when making connections quickly
             gameState.combo++;
             gameState.comboMultiplier = Math.min(1 + (gameState.combo * 0.25), 3); // Max 3x multiplier
-
-             // Play combo sound with increasing pitch
-             if (audioInitialized) {
-                 const baseFreq = Tone.Frequency("A4").toFrequency();
-                 const pitch = baseFreq * Math.pow(2, (gameState.combo -1) / 12);
-                 synths.combo.triggerAttackRelease(pitch, "0.08");
-             }
-
-
-            if (comboTimeout) clearTimeout(comboTimeout);
+            
+            // Reset combo after 3 seconds of inactivity
+            if (comboTimeout) {
+                clearTimeout(comboTimeout);
+            }
+            
             comboTimeout = setTimeout(() => {
                 gameState.combo = 0;
                 gameState.comboMultiplier = 1;
                 updateUI();
-            }, 3000); // 3 second combo window
-
+                
+                // Hide combo display
+                const comboDisplay = document.getElementById('combo-display');
+                comboDisplay.classList.remove('active');
+            }, 3000);
+            
             updateUI();
+            
+            // Show combo display
+            const comboDisplay = document.getElementById('combo-display');
+            comboDisplay.classList.add('active');
         }
-
-        function activatePowerUp(type, nodePosition) {
+        
+        function activatePowerUp(type) {
             const notification = document.getElementById('power-up-notification');
-            if (!notification) return;
-
-            if (powerUpTimeout) clearTimeout(powerUpTimeout); // Clear previous timeout
-
-            let notificationText = '';
-            let borderColor = '';
-            let duration = 10000; // Default duration 10s
-
+            
+            // Clear any existing timeouts
+            if (powerUpTimeout) {
+                clearTimeout(powerUpTimeout);
+            }
+            
             switch (type) {
                 case 'power':
                     gameState.powerUps.doublePoints = true;
-                    notificationText = 'Power-Up: Doppelte Punkte!';
-                    borderColor = 'var(--power-node-color)';
-                     if (audioInitialized) synths.powerUpPower.triggerAttackRelease("E5", "0.3");
+                    notification.textContent = 'Power-Up aktiviert: Doppelte Punkte für 10s!';
+                    notification.style.borderColor = 'var(--power-node-color)';
+                    
+                    powerUpTimeout = setTimeout(() => {
+                        gameState.powerUps.doublePoints = false;
+                        notification.classList.remove('visible');
+                    }, 10000);
                     break;
-                case 'speed': // Now gives points instead of time
-                     const pointBonus = difficultySettings[gameState.difficulty].pointsFromSpeedNode;
-                     gameState.score += pointBonus;
-                     notificationText = `Punkte: +${pointBonus}!`; // Changed text
-                     borderColor = 'var(--speed-node-color)';
-                     showBonusPoints(pointBonus, nodePosition); // Show points flying from node
-                     duration = 3000; // Shorter notification
-                      if (audioInitialized) synths.powerUpSpeed.triggerAttackRelease("A5", "0.2"); // Use the speed sound
-                     break;
+                    
+                case 'speed':
+                    // Extra points instead of time now
+                    const extraPoints = 50 * gameState.level;
+                    gameState.score += extraPoints;
+                    notification.textContent = `Power-Up aktiviert: +${extraPoints} Punkte!`;
+                    notification.style.borderColor = 'var(--speed-node-color)';
+                    
+                    // Show flying bonus text
+                    showBonusPoints(extraPoints);
+                    
+                    powerUpTimeout = setTimeout(() => {
+                        notification.classList.remove('visible');
+                    }, 3000);
+                    break;
+                    
                 case 'bonus':
-                    const bonusPoints = Math.floor(50 * gameState.level * difficultySettings[gameState.difficulty].scoreMultiplier);
+                    // Award bonus points
+                    const bonusPoints = 100 * gameState.level;
                     gameState.score += bonusPoints;
-                    notificationText = `Bonus: +${bonusPoints} Punkte!`;
-                    borderColor = 'var(--bonus-node-color)';
-                    showBonusPoints(bonusPoints, nodePosition); // Show points flying from node
-                    duration = 3000; // Shorter notification for bonus points
-                      if (audioInitialized) synths.powerUpBonus.triggerAttackRelease("G5", "0.15", "+0.05");
-                      if (audioInitialized) synths.powerUpBonus.triggerAttackRelease("C6", "0.1", "+0.15");
+                    notification.textContent = `Bonus: +${bonusPoints} Punkte!`;
+                    notification.style.borderColor = 'var(--bonus-node-color)';
+                    
+                    // Show flying bonus text
+                    showBonusPoints(bonusPoints);
+                    
+                    powerUpTimeout = setTimeout(() => {
+                        notification.classList.remove('visible');
+                    }, 3000);
                     break;
-                default: return; // Unknown type
             }
-
-            notification.textContent = notificationText;
-            notification.style.borderColor = borderColor;
+            
             notification.classList.add('visible');
-
-            powerUpTimeout = setTimeout(() => {
-                if (type === 'power') gameState.powerUps.doublePoints = false;
-                notification.classList.remove('visible');
-            }, duration);
-
             updateUI();
         }
-
-        // Function to convert 3D position to 2D screen coordinates
-        function toScreenPosition(posVec3, camera, renderer) {
-            const vector = posVec3.clone().project(camera);
-            vector.x = (vector.x + 1) / 2 * renderer.domElement.clientWidth;
-            vector.y = -(vector.y - 1) / 2 * renderer.domElement.clientHeight;
-            return vector;
-        }
-
-
-        function showBonusPoints(points, originPosition) {
+        
+        function showBonusPoints(points) {
             const bonusText = document.createElement('div');
             bonusText.className = 'bonus-points';
             bonusText.textContent = `+${points}`;
-
-             // Calculate screen position from 3D origin
-             if (originPosition) {
-                  const screenPos = toScreenPosition(originPosition, camera, renderer);
-                  bonusText.style.left = `${screenPos.x}px`;
-                  bonusText.style.top = `${screenPos.y}px`;
-             } else {
-                 // Fallback position if origin is not provided
-                 bonusText.style.left = `${50 + (Math.random() * 20 - 10)}%`;
-                 bonusText.style.top = `${50 + (Math.random() * 20 - 10)}%`;
-             }
-
-
+            
+            // Position near the center of the screen with random offset
+            bonusText.style.left = `${50 + (Math.random() * 20 - 10)}%`;
+            bonusText.style.top = `${50 + (Math.random() * 20 - 10)}%`;
+            
             document.body.appendChild(bonusText);
-
+            
+            // Remove after animation completes
             setTimeout(() => {
                 bonusText.remove();
-            }, 1500); // Remove after animation
+            }, 1500);
         }
 
         function updateUI() {
             document.getElementById('score-display').textContent = `Score: ${gameState.score}`;
             document.getElementById('level-display').textContent = `Level ${gameState.level}`;
+            
+            // Update combo display
             const comboDisplay = document.getElementById('combo-display');
             if (gameState.combo > 0) {
                 comboDisplay.textContent = `Combo: x${gameState.comboMultiplier.toFixed(1)}`;
@@ -1003,8 +837,8 @@
 
         // --- Node Creation ---
         function createNodes(count) {
-            const nodeGeometry = new THREE.IcosahedronGeometry(1.5, 1); // Slightly more complex geometry
-            const baseColor = new THREE.Color(0x00ffff); // Cyan
+            const nodeGeometry = new THREE.IcosahedronGeometry(1.5, 1);
+            const baseColor = new THREE.Color(0x00ffff);
 
             for (let i = 0; i < count; i++) {
                 const nodeMaterial = new THREE.MeshStandardMaterial({
@@ -1017,28 +851,21 @@
 
                 const node = new THREE.Mesh(nodeGeometry, nodeMaterial);
                 node.position.set(
-                    (Math.random() - 0.5) * 90, // Slightly wider spread
-                    (Math.random() - 0.5) * 70,
-                    (Math.random() - 0.5) * 90
+                    (Math.random() - 0.5) * 80,
+                    (Math.random() - 0.5) * 60,
+                    (Math.random() - 0.5) * 80
                 );
 
                 node.userData = {
                     id: `node_${i}`,
                     baseColor: baseColor.clone(),
-                    hoverColor: new THREE.Color(0x00ffaa), // Mint Green
-                    selectColor: new THREE.Color(0xff00ff), // Magenta
+                    hoverColor: new THREE.Color(0x00ffaa),
+                    selectColor: new THREE.Color(0xff00ff),
                     baseEmissiveIntensity: 1.5,
                     hoverEmissiveIntensity: 3.0,
-                    selectEmissiveIntensity: 3.5,
                     connectedTo: new Set(),
                     isTarget: false,
-                    specialType: null, // null, 'power', 'speed', 'bonus'
-                    // Store specific colors for special types
-                    powerColor: new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--power-node-color').trim()),
-                    speedColor: new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--speed-node-color').trim()), // Color for Points node
-                    bonusColor: new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--bonus-node-color').trim()),
-                    targetColor: new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--target-color').trim()),
-                    targetEmissive: new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--target-emissive').trim()),
+                    specialType: null
                 };
                 nodeDataMap.set(node.uuid, node.userData);
 
@@ -1049,488 +876,516 @@
 
         // --- Background Particles ---
         function createBackgroundParticles() {
-             // Remove existing particle systems if they exist
-             if (particles) {
-                scene.remove(particles);
-                particles.geometry.dispose();
-                particles.material.dispose();
-                particles = null; // Ensure reference is cleared
-             }
-             if (particleSystem) {
-                scene.remove(particleSystem);
-                particleSystem.geometry.dispose();
-                particleSystem.material.dispose();
-                particleSystem = null; // Ensure reference is cleared
+            const particleCount = 1500;
+            const particleGeometry = new THREE.BufferGeometry();
+            const particlePositions = new Float32Array(particleCount * 3);
+            const particleSizes = new Float32Array(particleCount);
+            
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                particlePositions[i3] = (Math.random() - 0.5) * 200;
+                particlePositions[i3 + 1] = (Math.random() - 0.5) * 200;
+                particlePositions[i3 + 2] = (Math.random() - 0.5) * 200;
+                particleSizes[i] = Math.random() * 2.0 + 0.5;
             }
-
-
-             const quality = document.getElementById('particles-setting')?.value || 'high';
-             const counts = { high: [1500, 2000], medium: [800, 0], low: [0, 0] };
-             const [count1, count2] = counts[quality];
-
-             if (count1 > 0) {
-                 const particleGeometry1 = new THREE.BufferGeometry();
-                 const positions1 = new Float32Array(count1 * 3);
-                 for (let i = 0; i < count1 * 3; i++) positions1[i] = (Math.random() - 0.5) * 250; // Wider spread
-                 particleGeometry1.setAttribute('position', new THREE.BufferAttribute(positions1, 3));
-                 const particleMaterial1 = new THREE.PointsMaterial({
-                     color: 0x6088ff, size: 1.8, transparent: true, opacity: 0.7,
-                     sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false // Added depthWrite false
-                 });
-                 particles = new THREE.Points(particleGeometry1, particleMaterial1);
-                 scene.add(particles);
-             } else {
-                 particles = null;
-             }
-
-             if (count2 > 0) {
-                 const particleGeometry2 = new THREE.BufferGeometry();
-                 const positions2 = new Float32Array(count2 * 3);
-                 for (let i = 0; i < count2 * 3; i++) positions2[i] = (Math.random() - 0.5) * 400; // Even wider spread
-                 particleGeometry2.setAttribute('position', new THREE.BufferAttribute(positions2, 3));
-                 const particleMaterial2 = new THREE.PointsMaterial({
-                     color: 0x2040ff, size: 1.0, transparent: true, opacity: 0.5,
-                     sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false // Added depthWrite false
-                 });
-                 particleSystem = new THREE.Points(particleGeometry2, particleMaterial2);
-                 scene.add(particleSystem);
-             } else {
-                 particleSystem = null;
-             }
-         }
+            
+            particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+            particleGeometry.setAttribute('size', new THREE.BufferAttribute(particleSizes, 1));
+            
+            const particleMaterial = new THREE.PointsMaterial({
+                color: 0x6088ff,
+                size: 1.5,
+                transparent: true,
+                opacity: 0.7,
+                sizeAttenuation: true,
+                blending: THREE.AdditiveBlending
+            });
+            
+            particles = new THREE.Points(particleGeometry, particleMaterial);
+            scene.add(particles);
+            
+            // Add a second particle system for depth
+            const particleSystem2Geometry = new THREE.BufferGeometry();
+            const particleSystem2Positions = new Float32Array(particleCount * 3);
+            const particleSystem2Sizes = new Float32Array(particleCount);
+            
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                particleSystem2Positions[i3] = (Math.random() - 0.5) * 300;
+                particleSystem2Positions[i3 + 1] = (Math.random() - 0.5) * 300;
+                particleSystem2Positions[i3 + 2] = (Math.random() - 0.5) * 300;
+                particleSystem2Sizes[i] = Math.random() * 1.0 + 0.2;
+            }
+            
+            particleSystem2Geometry.setAttribute('position', new THREE.BufferAttribute(particleSystem2Positions, 3));
+            particleSystem2Geometry.setAttribute('size', new THREE.BufferAttribute(particleSystem2Sizes, 1));
+            
+            const particleSystem2Material = new THREE.PointsMaterial({
+                color: 0x2040ff,
+                size: 0.8,
+                transparent: true,
+                opacity: 0.5,
+                sizeAttenuation: true,
+                blending: THREE.AdditiveBlending
+            });
+            
+            particleSystem = new THREE.Points(particleSystem2Geometry, particleSystem2Material);
+            scene.add(particleSystem);
+        }
 
         // --- Connection Lines ---
-        function createLine(startPos, endPos, color = 0x00ffaa, lineWidth = 2.5, dashed = false) {
-            const points = [startPos.x, startPos.y, startPos.z, endPos.x, endPos.y, endPos.z];
+        function createLine(startPos, endPos, color = 0x00ffaa, lineWidth = 2.5) {
+            const points = [];
+            points.push(startPos.x, startPos.y, startPos.z);
+            points.push(endPos.x, endPos.y, endPos.z);
+            
             const lineGeometry = new LineGeometry();
             lineGeometry.setPositions(points);
-
+            
             const lineMaterial = new LineMaterial({
                 color: color,
-                linewidth: lineWidth, // Note: linewidth requires worldUnits: true or careful scaling
+                linewidth: lineWidth,
                 vertexColors: false,
-                dashed: dashed,
-                dashSize: 0.3,
-                gapSize: 0.15,
+                dashed: false,
                 alphaToCoverage: true,
-                resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
+                resolution: new THREE.Vector2(window.innerWidth, window.innerHeight)
             });
-
+            
             const line = new Line2(lineGeometry, lineMaterial);
-            line.computeLineDistances(); // Important for dashed lines
             scene.add(line);
             return line;
         }
 
         function createConnection(nodeA, nodeB) {
             const connection = createLine(nodeA.position, nodeB.position, 0x00ffaa, 3.0);
-            connection.userData = { nodeA: nodeA.uuid, nodeB: nodeB.uuid };
+            connection.userData = {
+                nodeA: nodeA.uuid,
+                nodeB: nodeB.uuid
+            };
+            
             permanentLines.push(connection);
-
+            
+            // Add to connected lists
             nodeA.userData.connectedTo.add(nodeB.uuid);
             nodeB.userData.connectedTo.add(nodeA.uuid);
-
-            const connectionId1 = `${nodeA.uuid}-${nodeB.uuid}`;
-            const connectionId2 = `${nodeB.uuid}-${nodeA.uuid}`;
-            gameState.completedConnections.add(connectionId1);
-
-            // Play connection sound
-            if (audioInitialized) {
-                 synths.connect.triggerAttackRelease("C5", "0.3", "+0.05");
-                 synths.connect.triggerAttackRelease("G5", "0.2", "+0.15");
-            }
-
-            // Calculate score
+            
+            // Add to completed connections
+            gameState.completedConnections.add(`${nodeA.uuid}-${nodeB.uuid}`);
+            
+            // Calculate score for this connection
             let connectionScore = 100;
+            
+            // Apply combo multiplier
             connectionScore *= gameState.comboMultiplier;
-            if (gameState.powerUps.doublePoints) connectionScore *= 2;
+            
+            // Apply double points power-up
+            if (gameState.powerUps.doublePoints) {
+                connectionScore *= 2;
+            }
+            
+            // Apply difficulty multiplier
             connectionScore *= difficultySettings[gameState.difficulty].scoreMultiplier;
+            
+            // Add to total score
             gameState.score += Math.floor(connectionScore);
-
-             // Update combo and check level completion
-             updateCombo();
-             checkLevelComplete();
-
+            
+            // Update combo
+            updateCombo();
+            
+            // Check for level completion
+            checkLevelComplete();
+            
+            // Animate connection completion
             createConnectionParticles(nodeA.position, nodeB.position);
-
-             // Show score popup only if significant bonus applied
-             if (gameState.comboMultiplier > 1 || gameState.powerUps.doublePoints) {
-                  showBonusPoints(Math.floor(connectionScore), nodeB.position); // Show score near the second node
-             }
+            
+            // Show score popup
+            if (connectionScore > 100) {
+                showBonusPoints(Math.floor(connectionScore));
+            }
         }
 
-
         function createConnectionParticles(startPos, endPos) {
-            const particleCount = 60; // More particles
+            const particleCount = 50;
             const geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(particleCount * 3);
-
+            const sizes = new Float32Array(particleCount);
+            
             const direction = new THREE.Vector3().subVectors(endPos, startPos);
             const length = direction.length();
             direction.normalize();
-
+            
             for (let i = 0; i < particleCount; i++) {
                 const i3 = i * 3;
                 const t = Math.random();
                 const pos = new THREE.Vector3().copy(startPos).addScaledVector(direction, t * length);
-                // Add perpendicular offset
-                pos.x += (Math.random() - 0.5) * 3; // Wider spray
-                pos.y += (Math.random() - 0.5) * 3;
-                pos.z += (Math.random() - 0.5) * 3;
-                positions[i3] = pos.x; positions[i3 + 1] = pos.y; positions[i3 + 2] = pos.z;
+                
+                positions[i3] = pos.x;
+                positions[i3 + 1] = pos.y;
+                positions[i3 + 2] = pos.z;
+                sizes[i] = Math.random() * 2.0 + 1.0;
             }
+            
             geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            
             const material = new THREE.PointsMaterial({
-                color: 0x00ffaa, size: 3.0, transparent: true, opacity: 1.0, // Larger size
-                sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false
+                color: 0x00ffaa,
+                size: 2.0,
+                transparent: true,
+                opacity: 1.0,
+                sizeAttenuation: true,
+                blending: THREE.AdditiveBlending
             });
-            const particles = new THREE.Points(geometry, material);
-            scene.add(particles);
-
+            
+            const particleSystem = new THREE.Points(geometry, material);
+            scene.add(particleSystem);
+            
             // Animate particles
             const startTime = Date.now();
-            const duration = 800; // Slightly shorter duration
-            function animate() {
+            const duration = 1000; // 1 second
+            
+            function animateParticles() {
                 const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / duration, 1.0);
+                const progress = elapsed / duration;
+                
                 if (progress >= 1.0) {
-                    scene.remove(particles); geometry.dispose(); material.dispose(); return;
+                    scene.remove(particleSystem);
+                    geometry.dispose();
+                    material.dispose();
+                    return;
                 }
+                
                 material.opacity = 1.0 - progress;
-                material.size = 3.0 * (1.0 - progress * 0.8); // Shrink less drastically
-                material.needsUpdate = true;
-                requestAnimationFrame(animate);
+                material.size = 2.0 + progress * 3.0;
+                
+                requestAnimationFrame(animateParticles);
             }
-            animate();
+            
+            animateParticles();
         }
 
         function updateActiveLine(position) {
             if (selectedNode && activeLine) {
-                const positions = [
+                const positions = [];
+                positions.push(
                     selectedNode.position.x, selectedNode.position.y, selectedNode.position.z,
                     position.x, position.y, position.z
-                ];
+                );
                 activeLine.geometry.setPositions(positions);
-                activeLine.computeLineDistances(); // Recompute distances for dashed lines
+                activeLine.geometry.attributes.position.needsUpdate = true;
+                activeLine.computeLineDistances();
             }
         }
 
         function createActiveLine(start) {
-            if (activeLine) { scene.remove(activeLine); activeLine.geometry.dispose(); activeLine.material.dispose(); }
-            activeLine = createLine(start, start, 0xff00ff, 3.0, true); // Magenta, dashed
-        }
-
-        // --- Interaction Handling ---
-        function updateIntersections() {
-             // Skip updates if game is not in active play state
-             if (!pointerOverCanvas || gameState.isLevelComplete || gameState.tutorial || gameState.isGameOver) {
-                 // Ensure hover state is cleared if mouse leaves canvas or game state changes
-                 if (hoveredNode && hoveredNode !== selectedNode) {
-                      resetNodeAppearance(hoveredNode);
-                      hoveredNode = null;
-                 }
-                 return;
-             }
-
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(interactableNodes);
-
-            let currentHovered = null;
-            if (intersects.length > 0) {
-                currentHovered = intersects[0].object;
-            }
-
-            // --- Handle Hover State Change ---
-            if (currentHovered !== hoveredNode) {
-                // Reset previously hovered node (if it wasn't selected)
-                if (hoveredNode && hoveredNode !== selectedNode) {
-                    resetNodeAppearance(hoveredNode);
-                }
-
-                // Apply hover effect to the new node (if it's not selected)
-                if (currentHovered && currentHovered !== selectedNode) {
-                    applyNodeHoverEffect(currentHovered);
-                    // Play hover sound (throttled)
-                    const now = Date.now();
-                    if (audioInitialized && now - lastHoverSoundTime > 100) { // Throttle to 100ms
-                        synths.hover.triggerAttackRelease("A5", "0.05");
-                        lastHoverSoundTime = now;
-                    }
-                }
-                hoveredNode = currentHovered; // Update the currently hovered node
-            }
-        }
-
-        // Helper to reset node appearance based on its state
-         function resetNodeAppearance(node) {
-             if (!node) return;
-             if (node.userData.isTarget) {
-                 node.material.color.copy(node.userData.targetColor);
-                 node.material.emissive.copy(node.userData.targetEmissive);
-                 // Intensity will be set by animation loop or hover effect
-                 node.material.emissiveIntensity = node.userData.baseEmissiveIntensity; // Start with base intensity
-             } else if (node.userData.specialType) {
-                 setSpecialNodeColor(node, node.userData.specialType);
-                 // Intensity will be set by animation loop or hover effect
-                 node.material.emissiveIntensity = node.userData.baseEmissiveIntensity; // Start with base intensity
-             } else { // Regular node
-                 node.material.color.copy(node.userData.baseColor);
-                 node.material.emissive.copy(node.userData.baseColor);
-                 node.material.emissiveIntensity = node.userData.baseEmissiveIntensity;
-             }
-         }
-
-         // Helper to apply hover effect
-         function applyNodeHoverEffect(node) {
-             if (!node) return;
-             node.material.emissiveIntensity = node.userData.hoverEmissiveIntensity;
-             // Only change color appearance for non-target/non-special nodes on hover
-             if (!node.userData.isTarget && !node.userData.specialType) {
-                 node.material.color.copy(node.userData.hoverColor);
-                 node.material.emissive.copy(node.userData.hoverColor);
-             }
-             // For target/special nodes, only intensity changes on hover
-         }
-
-         // Helper to set color based on special type
-         function setSpecialNodeColor(node, type) {
-             switch (type) {
-                 case 'power':
-                      node.material.color.copy(node.userData.powerColor);
-                      node.material.emissive.copy(node.userData.powerColor);
-                      break;
-                 case 'speed': // Points node
-                      node.material.color.copy(node.userData.speedColor);
-                      node.material.emissive.copy(node.userData.speedColor);
-                      break;
-                 case 'bonus':
-                      node.material.color.copy(node.userData.bonusColor);
-                      node.material.emissive.copy(node.userData.bonusColor);
-                      break;
-                 default: // Fallback to base if type is null/invalid
-                      node.material.color.copy(node.userData.baseColor);
-                      node.material.emissive.copy(node.userData.baseColor);
-             }
-         }
-
-
-        function onPointerMove(event) {
-            const rect = renderer.domElement.getBoundingClientRect();
-            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-            pointerOverCanvas = true;
-
-            if (isDragging && selectedNode) {
-                raycaster.setFromCamera(mouse, camera);
-                 const planeNormal = new THREE.Vector3();
-                 camera.getWorldDirection(planeNormal);
-                 const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(
-                     planeNormal,
-                     selectedNode.position
-                 );
-
-                const intersectionPoint = new THREE.Vector3();
-                if (raycaster.ray.intersectPlane(plane, intersectionPoint)) {
-                    updateActiveLine(intersectionPoint);
-                }
-            }
-        }
-
-        function onPointerDown(event) {
-            if (gameState.tutorial || gameState.isLevelComplete || gameState.isGameOver) return;
-            if (event.button !== 0) return; // Only left click/touch
-
-            const rect = renderer.domElement.getBoundingClientRect();
-            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(interactableNodes);
-
-            if (intersects.length > 0) {
-                const clickedNode = intersects[0].object;
-
-                 // --- Handle Special Node Activation ---
-                 if (clickedNode.userData.specialType) {
-                     activatePowerUp(clickedNode.userData.specialType, clickedNode.position);
-                     const type = clickedNode.userData.specialType;
-                     clickedNode.userData.specialType = null;
-                     resetNodeAppearance(clickedNode);
-                     clickedNode.scale.set(1, 1, 1);
-                     clickedNode.rotation.set(0,0,0);
-                     if (gameState.specialNodes[type]) {
-                          gameState.specialNodes[type] = gameState.specialNodes[type].filter(uuid => uuid !== clickedNode.uuid);
-                     }
-                     return;
-                 }
-
-                // --- Handle Target Node Selection ---
-                if (clickedNode.userData.isTarget) {
-                    controls.enabled = false;
-                    isDragging = true;
-                    selectedNode = clickedNode;
-
-                    // Apply selection effect
-                    selectedNode.material.color.copy(selectedNode.userData.selectColor);
-                    selectedNode.material.emissive.copy(selectedNode.userData.selectColor);
-                    selectedNode.material.emissiveIntensity = selectedNode.userData.selectEmissiveIntensity;
-                    selectedNode.scale.set(1.1, 1.1, 1.1);
-
-                    // Play click sound
-                    if (audioInitialized) {
-                        synths.click.triggerAttackRelease("C5", "0.1");
-                    }
-
-                    createActiveLine(selectedNode.position);
-                }
-            }
-        }
-
-
-        function onPointerUp(event) {
-            if (!isDragging || !selectedNode) {
-                 controls.enabled = true;
-                 isDragging = false;
-                 return;
-            }
-
-            let connectionMade = false;
-            // Check if dropped onto a valid target node
-            if (hoveredNode && hoveredNode.userData.isTarget && hoveredNode !== selectedNode) {
-                 const id1 = `${selectedNode.uuid}-${hoveredNode.uuid}`;
-                 const id2 = `${hoveredNode.uuid}-${selectedNode.uuid}`;
-                 const needed = gameState.targetConnections.some(pair =>
-                     (pair[0] === selectedNode.uuid && pair[1] === hoveredNode.uuid) ||
-                     (pair[0] === hoveredNode.uuid && pair[1] === selectedNode.uuid)
-                 );
-
-                 if (needed && !gameState.completedConnections.has(id1) && !gameState.completedConnections.has(id2)) {
-                     createConnection(selectedNode, hoveredNode);
-                     connectionMade = true;
-                 } else {
-                       // Optional: Play a 'fail' sound
-                 }
-            }
-
-            // Reset the selected node's appearance
-            if (selectedNode) {
-                 resetNodeAppearance(selectedNode);
-                 selectedNode.scale.set(1, 1, 1);
-                 selectedNode = null;
-            }
-
-            // Remove the temporary dragging line
+            // Remove existing active line
             if (activeLine) {
                 scene.remove(activeLine);
                 activeLine.geometry.dispose();
                 activeLine.material.dispose();
                 activeLine = null;
             }
+            
+            const points = [];
+            points.push(start.x, start.y, start.z);
+            points.push(start.x, start.y, start.z); // Duplicate point initially
+            
+            const lineGeometry = new LineGeometry();
+            lineGeometry.setPositions(points);
+            
+            const lineMaterial = new LineMaterial({
+                color: 0xff00ff,
+                linewidth: 3.0,
+                vertexColors: false,
+                dashed: true,
+                dashSize: 0.3,
+                gapSize: 0.1,
+                resolution: new THREE.Vector2(window.innerWidth, window.innerHeight)
+            });
+            
+            activeLine = new Line2(lineGeometry, lineMaterial);
+            scene.add(activeLine);
+        }
 
+        // --- Interaction Handling ---
+        function updateIntersections() {
+            if (!pointerOverCanvas || gameState.isLevelComplete || gameState.tutorial) return;
+            
+            raycaster.setFromCamera(mouse, camera);
+            
+            const intersects = raycaster.intersectObjects(interactableNodes);
+            
+            // Reset all nodes that aren't selected
+            interactableNodes.forEach(node => {
+                if (node !== selectedNode) {
+                    node.material.emissiveIntensity = node.userData.baseEmissiveIntensity;
+                    
+                    if (node.userData.isTarget) {
+                        // Make target nodes pulse with animation
+                        const elapsedTime = clock.getElapsedTime();
+                        const pulseIntensity = 1.5 + Math.sin(elapsedTime * 3) * 0.5;
+                        node.material.emissiveIntensity = pulseIntensity;
+                        
+                        // Red glow for target nodes
+                        node.material.color.set(0xff3030);
+                        node.material.emissive.set(0xff0000);
+                        
+                        // Animate target nodes size
+                        const scale = 1.0 + Math.sin(elapsedTime * 2) * 0.05;
+                        node.scale.set(scale, scale, scale);
+                    } else if (node.userData.specialType) {
+                        // Special node animations
+                        const elapsedTime = clock.getElapsedTime();
+                        const pulseIntensity = 1.5 + Math.sin(elapsedTime * 3) * 0.5;
+                        node.material.emissiveIntensity = pulseIntensity;
+                        
+                        // Set color based on special type
+                        switch (node.userData.specialType) {
+                            case 'power':
+                                node.material.color.set(0xffaa00);
+                                node.material.emissive.set(0xffaa00);
+                                
+                                // Add rotation animation
+                                node.rotation.y = (elapsedTime * 0.5) % (Math.PI * 2);
+                                break;
+                                
+                            case 'speed':
+                                node.material.color.set(0x00ff00);
+                                node.material.emissive.set(0x00ff00);
+                                
+                                // Add pulsing size animation
+                                const scaleSpeed = 1.0 + Math.sin(elapsedTime * 4) * 0.1;
+                                node.scale.set(scaleSpeed, scaleSpeed, scaleSpeed);
+                                break;
+                                
+                            case 'bonus':
+                                node.material.color.set(0xaa00ff);
+                                node.material.emissive.set(0xaa00ff);
+                                
+                                // Add spinning animation
+                                node.rotation.x = (elapsedTime * 0.3) % (Math.PI * 2);
+                                node.rotation.z = (elapsedTime * 0.3) % (Math.PI * 2);
+                                break;
+                        }
+                    } else {
+                        node.scale.set(1, 1, 1);
+                        node.rotation.set(0, 0, 0);
+                        node.material.color.copy(node.userData.baseColor);
+                        node.material.emissive.copy(node.userData.baseColor);
+                    }
+                }
+            });
+            
+            // Clear previous hovered node
+            if (hoveredNode && hoveredNode !== selectedNode && intersects.length === 0) {
+                hoveredNode = null;
+            }
+            
+            // Update hovered node
+            if (intersects.length > 0) {
+                const closestIntersect = intersects[0].object;
+                
+                // Skip if we're already handling this node as selected
+                if (closestIntersect === selectedNode) return;
+                
+                hoveredNode = closestIntersect;
+                
+                // Apply hover effect
+                if (!isDragging) {
+                    closestIntersect.material.emissiveIntensity = closestIntersect.userData.hoverEmissiveIntensity;
+                    
+                    if (!closestIntersect.userData.isTarget && !closestIntersect.userData.specialType) {
+                        closestIntersect.material.color.copy(closestIntersect.userData.hoverColor);
+                        closestIntersect.material.emissive.copy(closestIntersect.userData.hoverColor);
+                    }
+                }
+            }
+        }
+
+        function onPointerMove(event) {
+            // Calculate mouse position in normalized device coordinates
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            
+            if (isDragging && selectedNode) {
+                raycaster.setFromCamera(mouse, camera);
+                
+                const planeNormal = camera.position.clone().sub(selectedNode.position).normalize();
+                const plane = new THREE.Plane(planeNormal, -selectedNode.position.dot(planeNormal));
+                
+                const intersection = new THREE.Vector3();
+                raycaster.ray.intersectPlane(plane, intersection);
+                
+                updateActiveLine(intersection);
+            }
+        }
+
+        function onPointerDown(event) {
+            if (gameState.tutorial || gameState.isLevelComplete) return;
+            
+            // Only handle left mouse button
+            if (event.button !== 0) return;
+            
+            raycaster.setFromCamera(mouse, camera);
+            
+            const intersects = raycaster.intersectObjects(interactableNodes);
+            
+            if (intersects.length > 0) {
+                const selectedObject = intersects[0].object;
+                
+                // If it's a special node, activate its power-up
+                if (selectedObject.userData.specialType) {
+                    activatePowerUp(selectedObject.userData.specialType);
+                    
+                    // Reset the node to normal
+                    selectedObject.userData.specialType = null;
+                    selectedObject.material.color.copy(selectedObject.userData.baseColor);
+                    selectedObject.material.emissive.copy(selectedObject.userData.baseColor);
+                    selectedObject.material.emissiveIntensity = selectedObject.userData.baseEmissiveIntensity;
+                    selectedObject.scale.set(1, 1, 1);
+                    selectedObject.rotation.set(0, 0, 0);
+                    
+                    // Remove from special nodes list
+                    Object.keys(gameState.specialNodes).forEach(type => {
+                        gameState.specialNodes[type] = gameState.specialNodes[type].filter(
+                            uuid => uuid !== selectedObject.uuid
+                        );
+                    });
+                    
+                    return;
+                }
+                
+                // If it's a target node, start a connection
+                if (selectedObject.userData.isTarget) {
+                    controls.enabled = false;
+                    isDragging = true;
+                    selectedNode = selectedObject;
+                    
+                    // Apply selection effect
+                    selectedNode.material.color.copy(selectedNode.userData.selectColor);
+                    selectedNode.material.emissive.copy(selectedNode.userData.selectColor);
+                    selectedNode.material.emissiveIntensity = 3.0;
+                    
+                    // Create active line for dragging
+                    createActiveLine(selectedNode.position);
+                }
+            }
+        }
+
+        function onPointerUp(event) {
+            if (!isDragging || !selectedNode) {
+                controls.enabled = true;
+                isDragging = false;
+                return;
+            }
+            
+            // Check if we're hovering over another target node
+            if (hoveredNode && hoveredNode.userData.isTarget && hoveredNode !== selectedNode) {
+                // Create permanent connection
+                createConnection(selectedNode, hoveredNode);
+            }
+            
+            // Reset state
+            if (selectedNode) {
+                selectedNode.material.color.copy(selectedNode.userData.baseColor);
+                selectedNode.material.emissive.copy(selectedNode.userData.baseColor);
+                selectedNode.material.emissiveIntensity = selectedNode.userData.baseEmissiveIntensity;
+                selectedNode = null;
+            }
+            
+            // Remove active line
+            if (activeLine) {
+                scene.remove(activeLine);
+                activeLine.geometry.dispose();
+                activeLine.material.dispose();
+                activeLine = null;
+            }
+            
             controls.enabled = true;
             isDragging = false;
         }
 
-
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
+            
             renderer.setSize(window.innerWidth, window.innerHeight);
             composer.setSize(window.innerWidth, window.innerHeight);
-
-            const resolution = new THREE.Vector2(window.innerWidth, window.innerHeight);
-            permanentLines.forEach(line => line.material.resolution.copy(resolution));
-            if (activeLine) activeLine.material.resolution.copy(resolution);
-        }
-
-        // --- Animation and Update Loop ---
-        function animateBackground() {
-            if (!particles && !particleSystem) return;
-            const time = Date.now() * 0.00005;
-            if (particles) particles.rotation.y = time * 0.1;
-            if (particleSystem) {
-                 particleSystem.rotation.y = -time * 0.05;
-                 particleSystem.rotation.x = time * 0.02;
+            
+            // Update line material resolutions
+            permanentLines.forEach(line => {
+                line.material.resolution.set(window.innerWidth, window.innerHeight);
+            });
+            
+            if (activeLine) {
+                activeLine.material.resolution.set(window.innerWidth, window.innerHeight);
             }
         }
 
-        function animateNodes() {
-            if (gameState.isLevelComplete || gameState.tutorial || gameState.isGameOver) return;
+        // --- Animation and Update Loop ---
+        function animateParticles() {
+            if (!particles || !particleSystem) return;
+            
+            const time = Date.now() * 0.00005;
+            
+            // Rotate first particle system slowly
+            particles.rotation.y = time * 0.1;
+            
+            // Rotate second particle system in opposite direction
+            particleSystem.rotation.y = -time * 0.05;
+        }
 
+        function animateTargetNodes() {
             const time = clock.getElapsedTime();
-
+            
             interactableNodes.forEach(node => {
-                 // Skip selected node animation AND hovered node (hover effect handles it)
-                 if (node === selectedNode || node === hoveredNode) return;
-
-                 if (node.userData.isTarget) {
-                     // Target Node Animation (Pulse intensity and scale)
-                     const pulseIntensity = 1.8 + Math.sin(time * 4 + node.position.y * 0.2) * 1.2;
-                     node.material.emissiveIntensity = pulseIntensity;
-                     // Color is set initially by resetNodeAppearance
-
-                     const scale = 1.0 + Math.sin(time * 2.5 + node.position.x * 0.1) * 0.1;
-                     node.scale.set(scale, scale, scale);
-                 } else if (node.userData.specialType) {
-                     // Special Node Animation
-                     const pulseIntensity = 1.6 + Math.sin(time * 3.5 + node.position.z * 0.3) * 0.8;
-                      node.material.emissiveIntensity = pulseIntensity;
-                     // Color is set initially by resetNodeAppearance
-
-                     // Type-specific animation
-                     switch (node.userData.specialType) {
-                         case 'power': // Gentle rotation
-                              node.rotation.y = (time * 0.4) % (Math.PI * 2);
-                              break;
-                         case 'speed': // Points node: Faster pulsing scale
-                              const scaleSpeed = 1.0 + Math.sin(time * 5 + node.position.y * 0.2) * 0.12;
-                              node.scale.set(scaleSpeed, scaleSpeed, scaleSpeed);
-                              break;
-                         case 'bonus': // Spin on multiple axes
-                              node.rotation.x = (time * 0.3) % (Math.PI * 2);
-                              node.rotation.z = (time * 0.5) % (Math.PI * 2);
-                              break;
-                     }
-                 } else { // Regular node (not target, not special, not hovered, not selected)
-                     // Reset non-target, non-special, non-hovered nodes smoothly
-                     node.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1);
-                     node.rotation.x += (0 - node.rotation.x) * 0.1;
-                     node.rotation.y += (0 - node.rotation.y) * 0.1;
-                     node.rotation.z += (0 - node.rotation.z) * 0.1;
-                     // Ensure appearance is reset if somehow missed by interaction handlers
-                     resetNodeAppearance(node);
-                 }
+                if (node.userData.isTarget && node !== selectedNode) {
+                    // Pulse effect for red glow
+                    const pulseIntensity = 2.0 + Math.sin(time * 3 + node.position.x * 0.1) * 1.0;
+                    node.material.emissiveIntensity = pulseIntensity;
+                    
+                    // Red glow for target nodes
+                    node.material.color.set(0xff3030);
+                    node.material.emissive.set(0xff0000);
+                    
+                    // Slightly stronger size animation
+                    const scale = 1.0 + Math.sin(time * 2 + node.position.z * 0.1) * 0.08;
+                    node.scale.set(scale, scale, scale);
+                }
             });
         }
 
-
         function animate() {
             requestAnimationFrame(animate);
+            
             if (!isInitialized) return;
-
-            const delta = clock.getDelta();
-
-            controls.update(); // Update controls if damping is enabled
-            updateIntersections(); // Handle hover effects and raycasting
-            animateBackground(); // Animate background particles
-            animateNodes(); // Animate target and special nodes
-
-            composer.render(delta); // Render the scene with post-processing
+            
+            // Update controls
+            controls.update();
+            
+            // Update interactions
+            updateIntersections();
+            
+            // Animate nodes and particles
+            animateParticles();
+            animateTargetNodes();
+            
+            // Render scene
+            composer.render();
         }
 
         // --- Initialization ---
         async function init() {
             try {
-                // Scene
+                // Scene setup
                 scene = new THREE.Scene();
                 scene.fog = new THREE.FogExp2(0x000000, 0.015);
 
-                // Camera
+                // Camera setup
                 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-                camera.position.set(0, 15, 70);
+                camera.position.set(0, 10, 60);
 
-                // Renderer
+                // Renderer setup
                 renderer = new THREE.WebGLRenderer({ antialias: true });
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -1538,84 +1393,85 @@
                 renderer.outputColorSpace = THREE.SRGBColorSpace;
                 document.body.appendChild(renderer.domElement);
 
-                // Controls
+                // Controls setup
                 controls = new OrbitControls(camera, renderer.domElement);
                 controls.enableDamping = true;
                 controls.dampingFactor = 0.05;
-                controls.minDistance = 15;
-                controls.maxDistance = 250;
+                controls.minDistance = 10;
+                controls.maxDistance = 200;
                 controls.enablePan = false;
 
-                // Lighting
-                const ambientLight = new THREE.AmbientLight(0x808080);
+                // Lighting setup
+                const ambientLight = new THREE.AmbientLight(0x606060);
                 scene.add(ambientLight);
-                const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
-                dirLight.position.set(5, 15, 10);
+                const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+                dirLight.position.set(5, 10, 7);
                 scene.add(dirLight);
 
-                // Post-processing (Bloom)
+                // Post-processing setup
                 const renderScene = new RenderPass(scene, camera);
                 const bloomPass = new UnrealBloomPass(
                     new THREE.Vector2(window.innerWidth, window.innerHeight),
-                    1.2, // strength
-                    0.5, // radius
-                    0.8  // threshold
+                    1.5, 0.4, 0.85
                 );
+                bloomPass.threshold = 0.15;
+                bloomPass.strength = 1.0;
+                bloomPass.radius = 0.6;
+
                 composer = new EffectComposer(renderer);
                 composer.addPass(renderScene);
                 composer.addPass(bloomPass);
 
-                // Interaction
+                // Interaction setup
                 raycaster = new THREE.Raycaster();
-                raycaster.params.Line.threshold = 0.5;
-                raycaster.params.Points.threshold = 1.0;
                 mouse = new THREE.Vector2();
 
-                // Create elements
-                createNodes(35); // More nodes for Deluxe
-                createBackgroundParticles(); // Create initial particles based on default setting
-                setupSettingsPanel(); // Setup settings listeners
-                showTutorial(); // Show tutorial first
+                // Create game elements
+                createNodes(35);
+                createBackgroundParticles();
+                
+                // Setup settings panel
+                setupSettingsPanel();
+
+                // Initialize game
+                initializeLevel(1);
+                showTutorial();
 
                 // Event listeners
                 window.addEventListener('resize', onWindowResize);
-                renderer.domElement.addEventListener('pointermove', onPointerMove, { passive: true });
+                renderer.domElement.addEventListener('pointermove', onPointerMove);
                 renderer.domElement.addEventListener('pointerdown', onPointerDown);
                 renderer.domElement.addEventListener('pointerup', onPointerUp);
                 renderer.domElement.addEventListener('pointerleave', () => { pointerOverCanvas = false; });
                 renderer.domElement.addEventListener('pointerenter', () => { pointerOverCanvas = true; });
 
-                // Dark mode handling (simple class toggle)
-                const darkModeMatcher = window.matchMedia('(prefers-color-scheme: dark)');
-                const handleDarkMode = (matches) => document.documentElement.classList.toggle('dark', matches);
-                darkModeMatcher.addEventListener('change', e => handleDarkMode(e.matches));
-                handleDarkMode(darkModeMatcher.matches);
-
                 // Remove loading screen
                 const loadingScreen = document.querySelector('.loading');
                 if (loadingScreen) {
-                    loadingScreen.style.opacity = '0';
-                    loadingScreen.addEventListener('transitionend', () => loadingScreen.remove());
+                    loadingScreen.style.opacity = 0;
+                    setTimeout(() => {
+                        loadingScreen.remove();
+                    }, 500);
                 }
 
                 isInitialized = true;
+                
+                // Start animation
                 animate();
-
             } catch (error) {
-                console.error("Error initializing Aetherium Deluxe:", error);
-                document.body.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--primary-color);"><h2>Fehler beim Initialisieren</h2><p>Aetherium Deluxe konnte nicht geladen werden. (${error.message})</p></div>`;
-                const loadingScreen = document.querySelector('.loading');
-                if (loadingScreen) loadingScreen.remove();
+                console.error("Error initializing Aetherium:", error);
+                document.body.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: var(--primary-color);">
+                        <h2>Fehler beim Initialisieren von Aetherium</h2>
+                        <p>Bitte versuche es erneut oder verwende einen neueren Browser.</p>
+                        <p>${error.message}</p>
+                    </div>
+                `;
             }
         }
 
-        // Start initialization
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
-
+        // Start the game
+        init();
     </script>
 </body>
 </html>
